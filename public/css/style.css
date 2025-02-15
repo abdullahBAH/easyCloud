@@ -27,14 +27,16 @@
     gap: 0.5rem;
 }
 
-.view-button, .info-button {
+.view-button,
+.info-button {
     padding: 0.5rem;
     border-radius: 0.25rem;
     color: #5f6368;
     transition: background-color 0.2s;
 }
 
-.view-button:hover, .info-button:hover {
+.view-button:hover,
+.info-button:hover {
     background-color: #f1f3f4;
 }
 

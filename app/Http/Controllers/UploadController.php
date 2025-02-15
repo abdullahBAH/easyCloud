@@ -25,7 +25,7 @@ class UploadController extends Controller
         $file = $request->file('file');
 
         // ✅ تحديد اسم جديد لحفظ الملف
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        $fileName = $file->getClientOriginalName();
 
         // ✅ نقل الملف إلى مجلد التخزين
         $file->move(public_path('uploads'), $fileName);

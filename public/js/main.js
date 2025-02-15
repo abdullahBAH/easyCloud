@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
     // Attach click events to info buttons after rendering the files
     function attachInfoClickListeners() {
         document.querySelectorAll(".info").forEach(icon => {
@@ -110,12 +111,67 @@ document.addEventListener('DOMContentLoaded', function () {
                     downloadLink.href = file.downloadPath; // Set the download URL
 
                     document.querySelector('.download-button a').href = file.downloadPath;
+                    document.querySelector(".delete").setAttribute("data-id", file.deletePath);
+                    document.querySelector(".share").setAttribute("data-id", file.sharePath);
+
 
                 }
             });
         });
     }
 
+    document.querySelectorAll(".delete").forEach(button => {
+        button.addEventListener("click", function () {
+            const fileUrl = this.getAttribute("data-id");
+            alert(fileUrl);  // Check if the URL is being captured correctly
+            if (!fileUrl) {
+                console.error("No file URL found!");
+                return;
+            }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(fileUrl, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("File deleted successfully!");
+                        this.closest("li").remove(); // Remove from UI
+                    } else {
+                        alert("Failed to delete file.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        });
+    });
+
+    document.querySelectorAll(".share").forEach(button => {
+        button.addEventListener("click", function () {
+            const fileId = this.getAttribute("data-id");
+
+            // Send a request to the share route
+            fetch(fileId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.share_link) {
+                        // Copy the shareable link to the clipboard
+                        navigator.clipboard.writeText(data.share_link)
+                            .then(() => {
+                            })
+                            .catch(error => {
+                                console.error('Failed to copy text: ', error);
+                                alert("Failed to copy link.");
+                            });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
 
     // Initial render
     renderFiles();
